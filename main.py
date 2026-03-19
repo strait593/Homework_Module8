@@ -2,7 +2,7 @@ from collections import UserDict
 from datetime import date, datetime
 from get_upcoming_bd_func import *
 from input_wrapper import input_error
-from serialization_funcs import load_data,save_data
+import pickle
 
 class InsufficientCharactersError(ValueError):
     pass
@@ -171,13 +171,23 @@ def show_upcoming_birthdays(args, book: AddressBook):
     #Display the congratulation dates for each user in upcoming list
     for user in upcoming:
         congratulations_dates = user['congratulation_date']
-        print(f"Congratulations date for {user['name']}: {congratulations_dates}")
     
     return "\n".join(result)
 
 def parse_input(user_input):
     cmd, *args = user_input.split()
     return cmd.strip().lower(), args
+
+def save_data(book,filename="addressbook.pkl"):
+    with open(filename, 'wb') as pickled:
+        pickle.dump(book, pickled)
+
+def load_data(filename="addressbook.pkl"):
+    try:
+        with open(filename, "rb") as addressbook:
+            return pickle.load(addressbook)
+    except FileNotFoundError:
+        return AddressBook()
 
 def main():
     book = load_data()
@@ -207,5 +217,6 @@ def main():
                 print(show_upcoming_birthdays(args, book))
             else:
                 print("Unknown command. Please try again.")
+
 if __name__ == "__main__":
     main()
